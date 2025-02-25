@@ -1,12 +1,13 @@
-import yfinance as yf
-import multiprocessing
+
 import os
-from datetime import datetime,timedelta
+import subprocess
+from datetime import datetime, timedelta, timezone
+import multiprocessing
 import pandas as pd
-
-
+import yfinance as yf
 
 def timeframe_select(interval):
+    # Finds maximum data available relative to TF
     if interval == '1m':
         timelimit = '7d'
     elif interval == '5m':
@@ -21,26 +22,40 @@ def timeframe_select(interval):
         timelimit = 'max'
     return timelimit
 
-
 def pulling_all_data(ticker,interval):
-    #function to pull the data
+    # Function to pull the data
     stock = yf.Ticker(ticker)
     data = {}
     period = timeframe_select(interval)
     data = stock.history(period=period, interval=interval)
     return data
 
+def ticker_name(ticker):
+    # Renames the ticker relative for more clear file naming
+    if ticker == "^FTSE":
+        name = "FTSE100"
+    if ticker == "^GDAXI":
+        name = "DAX40"
+    if ticker == "^NDX":
+        name = "NASDAQ"
+    if ticker == "^DJI":
+        name = "DJ30"
+    return name
+
 def filepath_namer(ticker,timeframes):
-    #create a list of all the filepaths for reference purposes
+    # create a list of all the filepaths for reference purposes
     filepaths = []
+    tick = ticker_name(ticker)
     for intervals in timeframes:
-        filepaths.append(f'{ticker}-{intervals}.csv')
+        filepaths.append(f'{tick}-{intervals}.csv')
     return filepaths
  
 def data_check(ticker,timeframes):
+    # Provide a BOOL, checking if there is already a file name matching the filename in the folder
     for intervals in timeframes:
-        filepath = f'{ticker}-{intervals}.csv'
-        all_exist= True
+        tick = ticker_name(ticker)
+        filepath = f'{tick}-{intervals}.csv'
+        all_exist = True
         if not os.path.exists(filepath):
             all_exist= False
             df = pd.DataFrame(pulling_all_data(ticker,intervals))
@@ -51,7 +66,7 @@ def data_check(ticker,timeframes):
     return all_exist
 
 def recent_data_check(csv_data):
-
+    # CHECK whether the most recent DATETIME on the .CSV is the same or more recent than yesterday - returns a BOOL
     data_match = False
 
     #Find most recent date on CSV DATA
@@ -60,44 +75,107 @@ def recent_data_check(csv_data):
     recent = df.loc[df['Datetime'].idxmax()]
     recent = recent['Datetime'].strftime('%y-%m-%d')    
 
-    #find date yesterday
-    yesterday1 = datetime.today() - timedelta(days=1)
+    # find date yesterday
+    yesterday1 = datetime.now(timezone.utc) - timedelta(days=1)
 
     if yesterday1.weekday() == 5:
-        yesterday1 = datetime.today() - timedelta(days=2)
+        yesterday1 = datetime.now(timezone.utc) - timedelta(days=2)
 
     if yesterday1.weekday() == 6:
-        yesterday1 = datetime.today() - timedelta(days=3)
+        yesterday1 = datetime.now(timezone.utc) - timedelta(days=3)
 
     yesterday = yesterday1.strftime('%y-%m-%d')
     
-    #if yesterdays date is less than or equal
+    # if yesterdays date is less than or equal
     if yesterday <= recent:
-        print(f"{csv_data} is up to date with {yesterday1} data")
+        print(f"{csv_data} is up to date with {yesterday} data")
         data_match = True
     else:
-        print(yesterday1.weekday(), yesterday)
+        print(f"Data for {csv_data} is outdated, data goes to {recent}.... proceeding to update")
+
 
     return data_match
 
+def data_merge(csv_data,ticker):
+    # MERGE the pulled data from yfinance with the .csv, then append with update
 
-def main():
+    timeframe = csv_data.split("-")[-1].split(".")[0]
+    import_data = pulling_all_data(ticker,timeframe)
+    import_data = pd.DataFrame(import_data)
+    import_data.index.name = 'Datetime'
+    stock_df = pd.read_csv(csv_data, parse_dates=['Datetime'], index_col='Datetime')
 
-    uk100 = "^FTSE"
-    dax40 = "^GDAXI"
-    nasdaq = "NDQ"
-    dj30 = "^DJI"
+    merged_df = pd.concat([stock_df,import_data], ignore_index=False)
 
+    merged_df = merged_df[~merged_df.index.duplicated(keep='last')]
+
+    merged_df.to_csv(csv_data, index=True, encoding= "utf-8")
+    print(f"Merge of {csv_data} complete.")
+
+def git_commit(filename, datascript = "STOCK-DATA-SAVING", commit_message="StockPrice Auto-update"):
+    # Commits file to git 
+    try:
+        subprocess.run(["cd",f"home/CoffeeNips/myenv/{datascript}"], shell=True,check=True)
+
+        subprocess.run(["git","add",filename], check=True)
+
+        subprocess.run(["git","commit","-m", commit_message], check=True)
+
+        subprocess.run(["git","push"], check=True)
+
+        print("Repository updated successfully!")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+
+def update_yfinance():
+    # Function to update yfinance automatically
+    try:
+        print("Updating yfinance from GitHub...")
+        subprocess.run(
+            ["pip","install","--upgrade","git+https://github.com/ranaroussi/yfinance.git"], check=True
+            )
+        print("yfinance updated successfully!")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to update yfinance: {e}")
+
+def virtual_connection():
+    try:
+        subprocess.run(["sudo","su"], check=True)
+
+        subprocess.run(["source","myenv/bin/activate"], check=True)
+
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to update yfinance: {e}")
+
+def main(ticker):
+    # Run the main script
+    print(f'Script Running on {ticker} at {datetime.now()}')
     timeframes = ['1m','5m','15m','30m','1h','1d']
 
-    check = data_check(dax40,timeframes)
-    if check:
-        filepaths = filepath_namer(dax40,timeframes)
-        for filename in filepaths:
-            print(recent_data_check(filename))
+    check = data_check(ticker,timeframes)
+    if check:                                               # IF ticker timeframe exists 
+        filepaths = filepath_namer(ticker,timeframes)       # Name of the FILEPATHS with all the timeframes - LIST
+        for filename in filepaths:                          # run checks to see if columns are UP-TO-Date   
+            if not recent_data_check(filename):             # IF files are NOT up to date.
+                data_merge(filename,ticker)                 # MERGE DF with Yfinance Data
+                git_commit(filename)
 
 if __name__ == "__main__":
-    main()
+    
+    virtual_connection()
+    update_yfinance()
+
+    tickers = ["^FTSE","^GDAXI","^NDX","^DJI"]
+    pool = multiprocessing.Pool()
+
+    pool.map(main,tickers)
+
+    pool.close()
+    pool.join()
+
+    print("All stock data fetched!")
+
 
     
 
