@@ -112,7 +112,7 @@ def data_merge(csv_data,ticker):
     merged_df.to_csv(csv_data, index=True, encoding= "utf-8")
     print(f"Merge of {csv_data} complete.")
 
-def git_commit(filename, datascript = "STOCK-DATA-SAVING", commit_message="StockPrice Auto-update"):
+def git_commit(filename, datascript = "Stock-Data-Saving", commit_message="StockPrice Auto-update"):
     # Commits file to git 
     try:
         subprocess.run(["cd",f"home/CoffeeNips/myenv/{datascript}"], shell=True,check=True)
@@ -162,7 +162,7 @@ def main(ticker):
                 git_commit(filename)
 
 if __name__ == "__main__":
-    
+
     virtual_connection()
     update_yfinance()
 
