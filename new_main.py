@@ -1,6 +1,5 @@
 
 import os
-import subprocess
 from datetime import datetime, timedelta, timezone
 import multiprocessing
 import pandas as pd
@@ -97,7 +96,7 @@ def recent_data_check(csv_data):
     return data_match
 
 def data_merge(csv_data,ticker):
-    # MERGE the pulled data from yfinance with the .csv, then append with update
+    # MERGE he pulled data from yfinance with the .csv, then append with update
 
     timeframe = csv_data.split("-")[-1].split(".")[0]
     import_data = pulling_all_data(ticker,timeframe)
@@ -112,41 +111,7 @@ def data_merge(csv_data,ticker):
     merged_df.to_csv(csv_data, index=True, encoding= "utf-8")
     print(f"Merge of {csv_data} complete.")
 
-def git_commit(filename, datascript = "Stock-Data-Saving", commit_message="StockPrice Auto-update"):
-    # Commits file to git 
-    try:
-        subprocess.run(["cd",f"home/CoffeeNips/myenv/{datascript}"], shell=True,check=True)
 
-        subprocess.run(["git","add",filename], check=True)
-
-        subprocess.run(["git","commit","-m", commit_message], check=True)
-
-        subprocess.run(["git","push"], check=True)
-
-        print("Repository updated successfully!")
-
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
-
-def update_yfinance():
-    # Function to update yfinance automatically
-    try:
-        print("Updating yfinance from GitHub...")
-        subprocess.run(
-            ["pip","install","--upgrade","git+https://github.com/ranaroussi/yfinance.git"], check=True
-            )
-        print("yfinance updated successfully!")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to update yfinance: {e}")
-
-def virtual_connection():
-    try:
-        subprocess.run(["sudo","su"], check=True)
-
-        subprocess.run(["source","myenv/bin/activate"], check=True)
-
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to update yfinance: {e}")
 
 def main(ticker):
     # Run the main script
@@ -159,12 +124,10 @@ def main(ticker):
         for filename in filepaths:                          # run checks to see if columns are UP-TO-Date   
             if not recent_data_check(filename):             # IF files are NOT up to date.
                 data_merge(filename,ticker)                 # MERGE DF with Yfinance Data
-                git_commit(filename)
 
 if __name__ == "__main__":
 
-    virtual_connection()
-    update_yfinance()
+    print("running main script")
 
     tickers = ["^FTSE","^GDAXI","^NDX","^DJI"]
     pool = multiprocessing.Pool()
