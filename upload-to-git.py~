@@ -11,7 +11,7 @@ try:
 
     subprocess.run(["git","add","."], check=True)
 
-    subprocess.run(["git","commit","-m", "stock price saving"+datetime.now()], check=True)
+    subprocess.run(["git","commit","-m", f"stock price saving {datetime.now()}"], check=True)
 
     subprocess.run(["git","push"], check=True)
 
