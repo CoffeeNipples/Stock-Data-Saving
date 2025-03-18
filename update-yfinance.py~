@@ -10,7 +10,7 @@ try:
             ["bash -c 'source /home/CoffeeNips/myenv/bin/activate'"], check=True, shell=True
             )
     subprocess.run(
-            ["pip","install","--upgrade","yfinance"], check=True
+            ["sudo","pip","install","--upgrade","git+https://github.com/ranaroussi/yfinance.git"], check=True
             )
     print("yfinance updated successfully!")
 except subprocess.CalledProcessError as e:

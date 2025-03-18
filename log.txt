@@ -1,0 +1,118 @@
+check.txt
+log.txt
+new_main.py
+README.md
+Interrupt
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    For more information visit http://rptl.io/venv
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+Failed to update yfinance: Command '['sudo', 'su']' returned non-zero exit status 130.
+Updating yfinance from GitHub...
+Failed to update yfinance: Command '['pip', 'install', '--upgrade', 'git+https://github.com/ranaroussi/yfinance.git']' returned non-zero exit status 1.
+Failed to get ticker '^NDX' reason: database is locked
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3263, in connect
+    self._state.set_connection(self._connect())
+                               ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3607, in _connect
+    self._add_conn_hooks(conn)
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3617, in _add_conn_hooks
+    self._set_pragmas(conn)
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3632, in _set_pragmas
+    cursor.execute('PRAGMA %s = %s;' % (pragma, value))
+sqlite3.OperationalError: database is locked
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+           ^^^^^^^^^^^^^^^^
+  File "/home/CoffeeNips/myenv/Stock-Data-Saving/new_main.py", line 156, in main
+    check = data_check(ticker,timeframes)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/CoffeeNips/myenv/Stock-Data-Saving/new_main.py", line 61, in data_check
+    df = pd.DataFrame(pulling_all_data(ticker,intervals))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/CoffeeNips/myenv/Stock-Data-Saving/new_main.py", line 30, in pulling_all_data
+    data = stock.history(period=period, interval=interval)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/yfinance/utils.py", line 104, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/yfinance/base.py", line 80, in history
+    return self._lazy_load_price_history().history(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/yfinance/base.py", line 86, in _lazy_load_price_history
+    self._price_history = PriceHistory(self._data, self.ticker, self._get_ticker_tz(self.proxy, timeout=10))
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/yfinance/base.py", line 94, in _get_ticker_tz
+    tz = c.lookup(self.ticker)
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/yfinance/cache.py", line 163, in lookup
+    self.initialise()
+  File "/usr/local/lib/python3.11/dist-packages/yfinance/cache.py", line 146, in initialise
+    db.connect()
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3262, in connect
+    with __exception_wrapper__:
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3088, in __exit__
+    reraise(new_type, new_type(exc_value, *exc_args), traceback)
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 196, in reraise
+    raise value.with_traceback(tb)
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3263, in connect
+    self._state.set_connection(self._connect())
+                               ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3607, in _connect
+    self._add_conn_hooks(conn)
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3617, in _add_conn_hooks
+    self._set_pragmas(conn)
+  File "/usr/local/lib/python3.11/dist-packages/peewee.py", line 3632, in _set_pragmas
+    cursor.execute('PRAGMA %s = %s;' % (pragma, value))
+peewee.OperationalError: database is locked
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/CoffeeNips/myenv/Stock-Data-Saving/new_main.py", line 172, in <module>
+    pool.map(main,tickers)
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 367, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 774, in get
+    raise self._value
+peewee.OperationalError: database is locked
+Script Running on ^GDAXI at 2025-02-25 23:00:48.944071
+Script Running on ^NDX at 2025-02-25 23:00:48.944606
+Script Running on ^DJI at 2025-02-25 23:00:48.948080
+DJ30-1m.csv is up to date with 25-02-24 data
+DJ30-5m.csv is up to date with 25-02-24 data
+DJ30-15m.csv is up to date with 25-02-24 data
+DJ30-30m.csv is up to date with 25-02-24 data
+DJ30-1h.csv is up to date with 25-02-24 data
+DJ30-1d.csv is up to date with 25-02-24 data
+Script Running on ^FTSE at 2025-02-25 23:00:48.943638
+FTSE100-1m.csv is up to date with 25-02-24 data
+FTSE100-5m.csv is up to date with 25-02-24 data
+FTSE100-15m.csv is up to date with 25-02-24 data
+FTSE100-30m.csv is up to date with 25-02-24 data
+FTSE100-1h.csv is up to date with 25-02-24 data
+FTSE100-1d.csv is up to date with 25-02-24 data
