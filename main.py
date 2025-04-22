@@ -1,7 +1,6 @@
 
 import os
 from datetime import datetime, timedelta, timezone
-import multiprocessing
 import pandas as pd
 import yfinance as yf
 
@@ -48,8 +47,8 @@ def filepath_namer(ticker,timeframes):
     for intervals in timeframes:
         filepaths.append(f'{tick}-{intervals}.csv')
     return filepaths
- 
-def data_check(ticker,timeframes):
+
+def data_check(ticker, timeframes):
     # Provide a BOOL, checking if there is already a file name matching the filename in the folder
     for intervals in timeframes:
         tick = ticker_name(ticker)
@@ -112,7 +111,6 @@ def data_merge(csv_data,ticker):
     print(f"Merge of {csv_data} complete.")
 
 
-
 def main(ticker):
     # Run the main script
     print(f'Script Running on {ticker} at {datetime.now()}')
@@ -124,21 +122,3 @@ def main(ticker):
         for filename in filepaths:                          # run checks to see if columns are UP-TO-Date   
             if not recent_data_check(filename):             # IF files are NOT up to date.
                 data_merge(filename,ticker)                 # MERGE DF with Yfinance Data
-
-def fullscript():
-
-    print("running main script")
-
-    tickers = ["^FTSE","^GDAXI","^NDX","^DJI"]
-    pool = multiprocessing.Pool()
-
-    pool.map(main,tickers)
-
-    pool.close()
-    pool.join()
-
-    print("All stock data fetched!")
-
-
-    
-
