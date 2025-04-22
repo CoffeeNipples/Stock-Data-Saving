@@ -125,7 +125,7 @@ def main(ticker):
             if not recent_data_check(filename):             # IF files are NOT up to date.
                 data_merge(filename,ticker)                 # MERGE DF with Yfinance Data
 
-if __name__ == "__main__":
+def fullscript():
 
     print("running main script")
 

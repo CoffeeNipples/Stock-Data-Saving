@@ -1,7 +1,0 @@
-import subprocess
-
-try:
-    subprocess.run(["/home/CoffeeNips/myenv/bin/python", "-m", "pip", "install", "--upgrade", "yfinance"], check=True)
-except subprocess.CalledProcessError as e:
-    print(f"Failed to update yfinance: {e}")
-
